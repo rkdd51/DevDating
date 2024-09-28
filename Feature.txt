@@ -1,0 +1,36 @@
+Feature Gathering
+
+1. Create an Account
+2. Login
+3. Update Profile
+4. Feed of People
+5. Send Connection Request
+6. See out matches
+7. See the request we have sent or received
+
+
+Database Design
+
+1. User Collection 
+  First Name
+  Last Name
+  Age
+  Gender
+
+2. Connection Request
+  From userId
+  To userId
+  Status of Request  - Pending , Accept , Reject
+
+API Design
+
+1. POST - /signup
+2. POST - /Login
+3. GET - /Profile
+4. POST - /Profile
+5. PATCH - /Profile
+5. DELETE - /profile
+6. POST - /sendRequest - Ignore or Interested
+7. POST - /overviewRequest - Accept or Reject
+8. GET - /request
+9. GET - /Connection
