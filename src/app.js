@@ -5,15 +5,31 @@ const User = require("./model/user");
 
 app.use(express.json()); //Using this middleware to convert json object to javascript object
 
-//User that gets all user data from database
-app.get('/feed', async(req, res) => {
+//Find by id and delete
+
+app.delete('/user', async (req, res) => {
   try {
-    let users = await User.find()
-    res.send(users);
+    let userId = req.body.userId;
+    if (!userId) {
+      return res.status(400).send("No user id provided");
+    } else {
+      let user = await User.findByIdAndDelete(userId);
+        res.send("User deleted successfully"); 
+    }
   } catch (err) {
     console.log(err);
   }
 })
+
+//User that gets all user data from database
+// app.get('/feed', async(req, res) => {
+//   try {
+//     let users = await User.find()
+//     res.send(users);
+//   } catch (err) {
+//     console.log(err);
+//   }
+// })
 
 
 //User that gets one user data from database
