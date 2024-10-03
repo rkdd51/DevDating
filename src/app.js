@@ -1,17 +1,12 @@
 const express = require("express");
 const connectDB = require("./config/database");
 const app = express();
-const User= require("./model/user")
+const User = require("./model/user")
+
+app.use(express.json()); //Using this middleware to convert json object to javascript object 
 
 app.post('/signup', async (req, res) => {
-  const user = new User({
-    firstName: "Test User",
-    lastName: "Test User",
-    emailId: "test@gmail.com",
-    password: "testing1",
-    age: 26,
-    gender: "male",
-  });
+  const user = new User(req.body);
   try {
     await user.save()
     res.send("Data added successfully")
