@@ -5,20 +5,32 @@ const User = require("./model/user");
 
 app.use(express.json()); //Using this middleware to convert json object to javascript object
 
-app.get("/user", async (req, res) => {
-  let userEmail = req.body.emailId;
+//User that gets all user data from database
+app.get('/feed', async(req, res) => {
   try {
-    let user = await User.findOne({ emailId: userEmail });
-    if (!user) {
-      res.send("No Email Found");
-    } else {
-      res.send(user);
-    }
+    let users = await User.find()
+    res.send(users);
   } catch (err) {
     console.log(err);
-    res.status(500).send("Server Error");
   }
-});
+})
+
+
+//User that gets one user data from database
+// app.get("/user", async (req, res) => {
+//   let userEmail = req.body.emailId;
+//   try {
+//     let user = await User.findOne({ emailId: userEmail });
+//     if (!user) {
+//       res.send("No Email Found");
+//     } else {
+//       res.send(user);
+//     }
+//   } catch (err) {
+//     console.log(err);
+//     res.status(500).send("Server Error");
+//   }
+// });
 
 // app.post('/signup', async (req, res) => {
 //   const user = new User(req.body);
