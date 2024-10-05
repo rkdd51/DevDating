@@ -5,8 +5,20 @@ const User = require("./model/user");
 
 app.use(express.json()); //Using this middleware to convert json object to javascript object
 
-//Find by id and delete
+//Find by Id and update
+app.patch('/user', async(req, res) => {
+  const user = req.body.userId;
+  const updatedBody = req.body;
+  try {
+    let updatedUser = await User.findByIdAndUpdate(user, updatedBody);
+    res.send("Data updated successfully");
+  } catch (err) {
+    console.log(err);
+  }
+});
 
+
+//Find by id and delete
 app.delete('/user', async (req, res) => {
   try {
     let userId = req.body.userId;
