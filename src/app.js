@@ -5,12 +5,15 @@ const User = require("./model/user");
 
 app.use(express.json()); //Using this middleware to convert json object to javascript object
 
-//Find by Id and update
+// //Find by Id and update
 app.patch('/user', async(req, res) => {
-  const user = req.body.userId;
-  const updatedBody = req.body;
+  const user = req?.body?.userId;
+  const updatedBody = req?.body;
   try {
-    let updatedUser = await User.findByIdAndUpdate(user, updatedBody);
+    let updatedUser = await User.findByIdAndUpdate(user, updatedBody, {
+      returnDocument: "before",
+      runValidators:true,
+    });
     res.send("Data updated successfully");
   } catch (err) {
     console.log(err);
@@ -33,42 +36,44 @@ app.delete('/user', async (req, res) => {
   }
 })
 
-//User that gets all user data from database
-// app.get('/feed', async(req, res) => {
-//   try {
-//     let users = await User.find()
-//     res.send(users);
-//   } catch (err) {
-//     console.log(err);
-//   }
-// })
+// User that gets all user data from database
+app.get('/feed', async(req, res) => {
+  try {
+    let users = await User.find()
+    res.send(users);
+  } catch (err) {
+    console.log(err);
+  }
+})
 
 
-//User that gets one user data from database
-// app.get("/user", async (req, res) => {
-//   let userEmail = req.body.emailId;
-//   try {
-//     let user = await User.findOne({ emailId: userEmail });
-//     if (!user) {
-//       res.send("No Email Found");
-//     } else {
-//       res.send(user);
-//     }
-//   } catch (err) {
-//     console.log(err);
-//     res.status(500).send("Server Error");
-//   }
-// });
+// User that gets one user data from database
+app.get("/user", async (req, res) => {
+  let userEmail = req.body.emailId;
+  try {
+    let user = await User.findOne({ emailId: userEmail });
+    if (!user) {
+      res.send("No Email Found");
+    } else {
+      res.send(user);
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Server Error");
+  }
+});
 
-// app.post('/signup', async (req, res) => {
-//   const user = new User(req.body);
-//   try {
-//     await user.save()
-//     res.send("Data added successfully")
-//   } catch (err) {
-//     console.log("Error saving user");
-//   }
-// })
+//User for signup
+app.post('/signup', async (req, res) => {
+  const user = new User(req.body);
+  console.log('user: ', user);
+  try {
+    await user.save()
+    res.send("Data added successfully")
+  } catch (err) {
+    console.log("Error saving user",err);
+  }
+})
 
 connectDB()
   .then(() => {
@@ -78,5 +83,5 @@ connectDB()
     });
   })
   .catch((error) => {
-    console.log("Database connection failed: +++++", error);
+    console.log("Database connection failed:", error);
   });
