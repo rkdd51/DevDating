@@ -4,8 +4,12 @@ const app = express();
 const User = require("./model/user");
 const { validateSignUpData } = require("./utils/validator");
 const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+
 
 app.use(express.json()); //Using this middleware to convert json object to javascript object
+app.use(cookieParser());
 
 //Login
 app.post("/login", async function (req, res) {
@@ -16,11 +20,15 @@ app.post("/login", async function (req, res) {
     if (!user) {
       return res?.status(404).send("User not found");
     }
-    const isMatch = await bcrypt?.compare(password, user?.password);
-    if (!isMatch) {
+    const isPasswordMatch = await bcrypt?.compare(password, user?.password);
+    if (!isPasswordMatch) {
       return res.status(400).send("Invalid Credentials");
     }
-    res.send("Login Successful");
+    if (isPasswordMatch) {
+      const token = await jwt.sign({_id:user?._id},"PrivateKey");
+      res.cookie("token", token);
+      res.send("Login Successful");
+    }
   } catch (err) {
     console.log("Error is" + err?.message);
   }
@@ -120,6 +128,31 @@ app.post("/signup", async (req, res) => {
     console.log("Error : ", err.message);
   }
 });
+
+app.get("/profile", async (req, res) => {
+  try {
+    const cookies = req?.cookies;
+    const { token } = cookies;
+    if (!token) {
+      throw new Error("Invalid token");
+    }
+
+    const verified = await jwt.verify(token, "PrivateKey");
+    const { _id } = verified; 
+
+    // Find user by _id
+    const user = await User.findById(_id);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    res.send(user);
+  } catch (err) {
+    console.log("Error in profile:", err.message);
+    res.status(400).send("Error fetching profile");
+  }
+});
+
 
 connectDB()
   .then(() => {
