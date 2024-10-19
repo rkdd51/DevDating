@@ -7,6 +7,25 @@ const bcrypt = require("bcrypt");
 
 app.use(express.json()); //Using this middleware to convert json object to javascript object
 
+//Login
+app.post("/login", async function (req, res) {
+  const { emailId, password } = req.body;
+
+  try {
+    let user = await User?.findOne({ emailId });
+    if (!user) {
+      return res?.status(404).send("User not found");
+    }
+    const isMatch = await bcrypt?.compare(password, user?.password);
+    if (!isMatch) {
+      return res.status(400).send("Invalid Credentials");
+    }
+    res.send("Login Successful");
+  } catch (err) {
+    console.log("Error is" + err?.message);
+  }
+})
+
 // //Find by Id and update
 app.patch("/user/:userId", async (req, res) => {
   const user = req?.params?.userId;
