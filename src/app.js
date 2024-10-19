@@ -2,6 +2,8 @@ const express = require("express");
 const connectDB = require("./config/database");
 const app = express();
 const User = require("./model/user");
+const { validateSignUpData } = require("./utils/validator");
+const bcrypt = require("bcrypt");
 
 app.use(express.json()); //Using this middleware to convert json object to javascript object
 
@@ -77,13 +79,26 @@ app.get("/user", async (req, res) => {
 
 //User for signup
 app.post("/signup", async (req, res) => {
-  const user = new User(req.body);
-  console.log("user: ", user);
+  
   try {
+    
+    const { firstName, lastName, emailId, password } = req.body;
+    const hashPassword = await bcrypt
+    .hash(password, 10);
+    validateSignUpData(req);
+    const user = new User({
+      firstName,
+      lastName,
+      emailId,
+      password: hashPassword,
+    });
+    if (!user) {
+      return res.status(400).send("Invalid User Data");
+    }
     await user.save();
     res.send("Data added successfully");
   } catch (err) {
-    console.log("Error saving user", err);
+    console.log("Error : ", err.message);
   }
 });
 
