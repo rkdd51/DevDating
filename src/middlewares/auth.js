@@ -1,25 +1,22 @@
-const authPath = (req,res,next) => {
-    let token = "xyz";
-    let isAuthenticated = token === "xyz";
-    if (!isAuthenticated) {
-        res.status(401).res.send( "Unauthorized Admin" );
-    } else {
-        next();
-    }
-}
+const jwt = require("jsonwebtoken");
+const User = require("../model/user");
 
-const userAuth = (req, res, next) => {
-  let token = "xyz";
-  let isAuthenticated = token === "xyz";
-  if (!isAuthenticated) {
-    res.status(401).res.send("Unauthorized User");
-  } else {
-    next();
-  }
+const userAuth = async(req, res, next) => {
+   try {
+     const token = req.cookies.token;
+     if (!token) {
+       throw new Error("Invalid token");
+     }
+     const decoded = jwt.verify(token, "PrivateKey", { expiresIn: '7d' });
+     const user = await User.findById(decoded?._id);
+     if (!user) return res.status(401).send("Access denied. Invalid token.");
+     req.user = user;
+     next();
+   } catch (err) {
+     res.status(400).send("Access denied: " + err.message);
+   }
 };
 
-
 module.exports = {
-  authPath,
   userAuth,
 };
