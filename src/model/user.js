@@ -3,6 +3,7 @@ var validator = require("validator");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
+// Schema and its validation 
 const userSchema = mongoose.Schema(
   {
     firstName: {
@@ -56,6 +57,7 @@ const userSchema = mongoose.Schema(
   }
 );
 
+// Validation through schema methods provided by mongoose , this is responsible for JWT validation. NOTE: This can also be managed through the API level validation
 userSchema.methods.getJWT = async function () {
   const token = await jwt.sign({ _id: this._id }, "PrivateKey", {
     expiresIn: "7d",
@@ -63,6 +65,7 @@ userSchema.methods.getJWT = async function () {
   return token;
 };
 
+//Validation through schema methods provided by mongoose , this is responsible for password validation.
 userSchema.methods.getPasswordVerified = async function (passwordInputByUser) {
   const isPasswordMatch = await bcrypt?.compare(
     passwordInputByUser,

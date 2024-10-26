@@ -1,5 +1,7 @@
 const validator = require('validator');
 
+
+//Common helper function for validating required fields
 const validateSignUpData = (req) => {
     const { firstName,lastName, emailId, password } = req.body;
     if (!firstName || !lastName) {
