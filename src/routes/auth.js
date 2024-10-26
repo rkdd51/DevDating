@@ -7,6 +7,7 @@ const User = require("../model/user");
 const authRouter = express.Router();
 
 //User for signup
+//! Need to improve this such that if there is a user who already exists then show proper error message
 authRouter.post("/signup", async (req, res) => {
   try {
     const { firstName, lastName, emailId, password } = req.body;
@@ -50,6 +51,16 @@ authRouter.post("/login", async function (req, res) {
     console.log("Error is" + err?.message);
   }
 });
+
+//Logout
+authRouter.post("/logout", (req, res) => {
+  res.cookie("token", null, {
+    expires: new Date(Date.now()),
+  });
+  res.send("Logged out successfully");
+});
+
+
 
 
 module.exports = authRouter;
