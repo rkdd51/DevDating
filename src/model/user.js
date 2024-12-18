@@ -79,4 +79,7 @@ userSchema.methods.getPasswordVerified = async function (passwordInputByUser) {
 
 const userModel = mongoose.model("User", userSchema);
 
+//This is compound index
+userModel.index({ firstName: 1, emailId: 1 });
+
 module.exports = userModel;
