@@ -11,10 +11,8 @@
 - PATCH API - Profile/password
 
 ## connectionRequestRouter
-- POST API - request/send/interested/:userID
-- POST API - request/send/ignored/:userID
-- POST API - request/review/accepted/:requestedID
-- POST API - request/review/rejected/:requestedID
+- POST API - request/send/:status/:userID
+- POST API - request/review/:status/:requestedID
 
 ## userRouter
 - GET API - /user/connections
