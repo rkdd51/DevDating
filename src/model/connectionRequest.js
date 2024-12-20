@@ -23,7 +23,7 @@ const connectionRequestSchema = new mongoose.Schema(
   }
 );
 
-//This means that fromUserId will have priority when searching in db "https://mongoosejs.com/docs/api/schema.html#Schema.prototype.index()"
+// Indexing in mongoDB - This means that fromUserId will have priority when searching in db "https://mongoosejs.com/docs/api/schema.html#Schema.prototype.index()"
 connectionRequestSchema.index({fromUserId:1})
 
 module.exports = mongoose.model('ConnectionRequest', connectionRequestSchema);
