@@ -44,6 +44,15 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
 
 userRouter.get("/feed", userAuth, async (req, res) => {
   try {
+
+    //* Pagination
+
+    const page = parseInt(req.query.page) || 1;
+    let limit = parseInt(req.query.limit) || 10; // Number of cards per page
+    limit = limit > 10 ? 10 : limit; // Number of cards per page
+    const skip = (page - 1) * limit;
+
+
     //User should see all the cards except
     //1. His own cards
     //2. Cards from the users whom user has already sent the request
@@ -71,7 +80,7 @@ userRouter.get("/feed", userAuth, async (req, res) => {
         { _id: { $nin: Array.from(hideUserFromFeed) } },
         { _id: { $ne: loggedInUser._id } },
       ],
-    }).select("firstName");
+    }).select("firstName").skip(skip).limit(limit);
 
     res.send(users);
   } catch (err) {
