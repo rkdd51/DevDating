@@ -34,9 +34,10 @@ authRouter.post("/login", async function (req, res) {
   const { emailId, password } = req.body;
 
   try {
-    let user = await User?.findOne({ emailId });
+    let user = await User?.findOne({ emailId:emailId });
+    
     if (!user) {
-      return res?.status(404).send("User not found");
+      throw new Error(" User not found");
     }
     const isPasswordMatch = await user.getPasswordVerified(password);
     if (!isPasswordMatch) {
@@ -45,7 +46,7 @@ authRouter.post("/login", async function (req, res) {
     if (isPasswordMatch) {
       const token = await user.getJWT();
       res.cookie("token", token);
-      res.send("Login Successful");
+      res.send(user);
     }
   } catch (err) {
     console.log("Error is" + err?.message);
