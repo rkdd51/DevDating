@@ -6,7 +6,7 @@ const userAuth = async(req, res, next) => {
    try {
      const token = req.cookies.token;
      if (!token) {
-       throw new Error("Invalid token");
+       res.status(401).send("Invalid token");
      }
      const decoded = jwt.verify(token, "PrivateKey", { expiresIn: '7d' });
      const user = await User.findById(decoded?._id);
