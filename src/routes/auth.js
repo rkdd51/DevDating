@@ -37,9 +37,10 @@ authRouter.post("/login", async function (req, res) {
     let user = await User?.findOne({ emailId:emailId });
     
     if (!user) {
-      throw new Error(" User not found");
+       res.status(400).send("Invalid Credentials");
     }
     const isPasswordMatch = await user.getPasswordVerified(password);
+    console.log('isPasswordMatch: ', isPasswordMatch);
     if (!isPasswordMatch) {
       return res.status(400).send("Invalid Credentials");
     }
@@ -49,7 +50,7 @@ authRouter.post("/login", async function (req, res) {
       res.send(user);
     }
   } catch (err) {
-    console.log("Error is" + err?.message);
+    console.log("Error is " + err?.message);
   }
 });
 
