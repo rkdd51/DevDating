@@ -48,8 +48,8 @@ userRouter.get("/feed", userAuth, async (req, res) => {
     //* Pagination
 
     const page = parseInt(req.query.page) || 1;
-    let limit = parseInt(req.query.limit) || 10; // Number of cards per page
-    limit = limit > 10 ? 10 : limit; // Number of cards per page
+    let limit = parseInt(req.query.limit) || 20; // Number of cards per page
+    limit = limit > 10 ? 20 : limit; // Number of cards per page
     const skip = (page - 1) * limit;
 
 
@@ -81,9 +81,10 @@ userRouter.get("/feed", userAuth, async (req, res) => {
         { _id: { $ne: loggedInUser._id } },
       ],
     })
-      .select("firstName lastName skills")
-      .skip(skip)
-      .limit(limit);
+    .select("firstName lastName skills")
+    .skip(skip)
+    .limit(limit);
+    
 
     res.send(users);
   } catch (err) {
