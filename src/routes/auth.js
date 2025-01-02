@@ -10,7 +10,7 @@ const authRouter = express.Router();
 //! Need to improve this such that if there is a user who already exists then show proper error message
 authRouter.post("/signup", async (req, res) => {
   try {
-    const { firstName, lastName, emailId, password } = req.body;
+    const { firstName, lastName, emailId, password ,age,gender} = req.body;
     const hashPassword = await bcrypt.hash(password, 10);
     validateSignUpData(req);
     const user = new User({
@@ -18,6 +18,8 @@ authRouter.post("/signup", async (req, res) => {
       lastName,
       emailId,
       password: hashPassword,
+      age,
+      gender
     });
     if (!user) {
       return res.status(400).send("Invalid User Data");
