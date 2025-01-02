@@ -80,7 +80,10 @@ userRouter.get("/feed", userAuth, async (req, res) => {
         { _id: { $nin: Array.from(hideUserFromFeed) } },
         { _id: { $ne: loggedInUser._id } },
       ],
-    }).select("firstName").skip(skip).limit(limit);
+    })
+      .select("firstName lastName skills")
+      .skip(skip)
+      .limit(limit);
 
     res.send(users);
   } catch (err) {
