@@ -40,7 +40,6 @@ authRouter.post("/login", async function (req, res) {
        res.status(400).send("Invalid Credentials");
     }
     const isPasswordMatch = await user.getPasswordVerified(password);
-    console.log('isPasswordMatch: ', isPasswordMatch);
     if (!isPasswordMatch) {
       return res.status(400).send("Invalid Credentials");
     }
