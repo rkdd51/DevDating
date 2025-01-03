@@ -26,21 +26,37 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
   try {
     const loggedInUser = req.user;
 
+    // Fetch all connections where the logged-in user is either the sender or the receiver
     const connections = await ConnectionRequest.find({
       $or: [{ fromUserId: loggedInUser._id }, { toUserId: loggedInUser._id }],
       status: "accepted",
-    }).populate("fromUserId", ["firstName", "lastName"]);
+    })
+      .populate("fromUserId", ["firstName", "lastName"])
+      .populate("toUserId", ["firstName", "lastName"]);
 
-    let connectionDetails = connections.map((data) => data?.fromUserId);
+    // Map the connections to get the details of the other user
+    const connectionDetails = connections.map((connection) => {
+      // If the logged-in user is the sender, get the receiver's details
+      if (
+        connection.fromUserId._id.toString() === loggedInUser._id.toString()
+      ) {
+        return connection.toUserId;
+      }
+      // Otherwise, get the sender's details
+      return connection.fromUserId;
+    });
 
     res.json({
       message: "User connections",
       connectionDetails,
     });
   } catch (err) {
-    res.status(400).send("Error fetching user connections:" + err.message);
+    res
+      .status(400)
+      .json({ error: "Error fetching user connections: " + err.message });
   }
 });
+
 
 userRouter.get("/feed", userAuth, async (req, res) => {
   try {
