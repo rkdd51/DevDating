@@ -3,31 +3,61 @@ const bcrypt = require("bcrypt");
 const { validateSignUpData } = require("../utils/validator");
 const User = require("../model/user");
 
-
 const authRouter = express.Router();
 
 //User for signup
-//! Need to improve this such that if there is a user who already exists then show proper error message
+
 authRouter.post("/signup", async (req, res) => {
   try {
-    const { firstName, lastName, emailId, password ,age,gender} = req.body;
-    const hashPassword = await bcrypt.hash(password, 10);
+    const { firstName, lastName, emailId, password, age, gender } = req.body;
+
+    // Validate user-provided data
     validateSignUpData(req);
+
+    // Hash the user's password
+    const hashPassword = await bcrypt.hash(password, 10);
+
+    // Create a new user
     const user = new User({
       firstName,
       lastName,
       emailId,
       password: hashPassword,
       age,
-      gender
+      gender,
     });
+
     if (!user) {
       return res.status(400).send("Invalid User Data");
     }
+
+    // Save the user in the database
     await user.save();
-    res.send("Data added successfully");
+
+    // Generate a JWT token
+    const token = await user.getJWT();
+
+    // Set the cookie with the token
+    res.cookie("token", token, {
+      httpOnly: true, // Prevent access by client-side scripts
+      secure: process.env.NODE_ENV === "production", // Use HTTPS in production
+      sameSite: "strict", // Helps prevent CSRF attacks
+    });
+
+    // Send the user data in the response (excluding sensitive data)
+    const userResponse = {
+      id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      emailId: user.emailId,
+      age: user.age,
+      gender: user.gender,
+    };
+
+    res.status(201).send(userResponse);
   } catch (err) {
-    console.log("Error : ", err.message);
+    console.error("Error during signup:", err.message);
+    res.status(500).send("An error occurred during signup. Please try again.");
   }
 });
 
@@ -36,10 +66,10 @@ authRouter.post("/login", async function (req, res) {
   const { emailId, password } = req.body;
 
   try {
-    let user = await User?.findOne({ emailId:emailId });
-    
+    let user = await User?.findOne({ emailId: emailId });
+
     if (!user) {
-       res.status(400).send("Invalid Credentials");
+      res.status(400).send("Invalid Credentials");
     }
     const isPasswordMatch = await user.getPasswordVerified(password);
     if (!isPasswordMatch) {
@@ -62,8 +92,5 @@ authRouter.post("/logout", (req, res) => {
   });
   res.send("Logged out successfully");
 });
-
-
-
 
 module.exports = authRouter;
