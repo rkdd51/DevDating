@@ -16,7 +16,7 @@ const validateSignUpData = (req) => {
 
 //Common helper function for validating edit profile information
 const validateEditData = (req) => {
-    const isEditProfileAllowed = ["firstName", "lastName", "skills","age","gender"]
+    const isEditProfileAllowed = ["firstName", "lastName","age","gender"]
     const isAllowed = Object.keys(req.body).every(val => isEditProfileAllowed.includes(val));
     return isAllowed
 };

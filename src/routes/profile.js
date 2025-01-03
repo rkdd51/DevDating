@@ -17,7 +17,7 @@ profileRouter.get("/profile/view", userAuth, async (req, res) => {
 });
 
 //Profile edit
-profileRouter.post("/profile/edit", userAuth, async (req, res) => {
+profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
   try {
     if (!validateEditData(req)) {
       throw new Error("Invalid edit request");
@@ -34,7 +34,6 @@ profileRouter.post("/profile/edit", userAuth, async (req, res) => {
       user: loggedInUser,
     });
   } catch (err) {
-    console.log("Error in profile:", err.message);
     res.status(400).send("Error editing profile");
 
   }
